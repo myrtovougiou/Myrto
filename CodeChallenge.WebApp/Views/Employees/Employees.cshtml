@@ -1,0 +1,238 @@
+﻿@(Html.DevExtreme().DataGrid<CodeChallenge.WebApp.Models.Employee>()
+    .Height("90%")
+    .FocusedRowEnabled(true)
+    .ID("EmployeesGridContainer")
+    .ColumnAutoWidth(true)
+    .ShowBorders(true)
+    .SearchPanel(sp =>
+    {
+        sp.Visible(true);
+    })
+    .HeaderFilter(v => v.Visible(true)).AllowColumnReordering(true).AllowColumnResizing(true).ColumnMinWidth(50)
+    .Selection(s => s.Mode(SelectionMode.Multiple))
+    .Export(e => e.Enabled(true).AllowExportSelectedData(true))
+    .Paging(paging =>
+    {
+        paging.Enabled(true);
+        paging.PageSize(new JS("PageSize()"));
+
+    })
+    .OnToolbarPreparing("ToolbarPreparing")
+    .OnExporting("Exporting")
+    .OnEditingStart("EditingStart")
+    .OnSelectionChanged("SelectionChanged")
+    .Editing(editing =>
+        editing.Mode(GridEditMode.Popup).Texts(texts => texts.EditRow("Details"))
+        .AllowUpdating(true)
+        .Popup(p => p
+        .Title("Employee Details")
+        .ID("EditEmployeePopUp")
+        .ShowTitle(true)
+        .OnHiding("Hiding")
+        .ToolbarItems(t => t.Add().Template(@<text></text>))
+.Width(480)
+.Height(575)
+.Position(pos => pos
+.My(HorizontalAlignment.Center, VerticalAlignment.Top)
+.At(HorizontalAlignment.Center, VerticalAlignment.Top)
+.Of(new JS("document.getElementsByTagName('body')[0]"))
+).ContentTemplate(@<text>
+            @Html.DevExtreme().TextBox().ID("id").Visible(false)
+            <div class="flexPop">
+                <div class="flexPop2_2">
+                    <label class="labelFlexPop2_2">Name:</label>
+                    @Html.DevExtreme().TextBox().ID("name").Width(350).ReadOnly(true)
+                </div>
+                <div class="flexPop2_2">
+                    <label class="labelFlexPop2_2">Surname:</label>
+                    @Html.DevExtreme().TextBox().ID("surname").Width(350).ReadOnly(true)
+                </div>
+                <div class="flexPop2_2">
+                    <label class="labelFlexPop2_2">Hiring Date:</label>
+                    @Html.DevExtreme().DateBox().ID("hiringDate").Width(350).Type(DateBoxType.Date).DisplayFormat("dd/MM/yyyy").ReadOnly(true).AcceptCustomValue(false).OpenOnFieldClick(true)
+                </div>
+                <div class="flexPop2_2">
+                    <label class="labelFlexPop2_2">Date Modified:</label>
+                    @Html.DevExtreme().DateBox().ID("dateSkillChanged").Width(350).Type(DateBoxType.Date).DisplayFormat("dd/MM/yyyy").ReadOnly(true)
+                </div>
+                <div class="flexPop2_2">
+                    <label class="labelFlexPop2_2">Last Change:</label>
+                    @Html.DevExtreme().TextBox().ID("typeOfSkillChange").Width(350).ReadOnly(true)
+                </div>
+            </div>
+            <div id="SkillsGridContainerEdit"></div>
+            <div class="flexPop4_2">
+                @Html.DevExtreme().Button().ID("EditPopUp").Text("Edit").OnClick("Edit").Width(80)
+                @Html.DevExtreme().Button().ID("SavePopUp").Text("Save").OnClick("Save").Width(80)
+                @Html.DevExtreme().Button().ID("HistoryPopUp").Text("History").OnClick("ViewChanges").Width(80)
+                @Html.DevExtreme().Button().ID("DeletePopUp").Text("Delete").OnClick("Delete").Width(80)
+                @Html.DevExtreme().Button().ID("CancelPopUp").Text("Cancel").OnClick("Cancel").Width(80)
+            </div>
+</text>)))
+.Columns(columns =>
+{
+columns.AddFor(m => m.Id).Visible(false);
+columns.AddFor(m => m.Name).AllowSearch(true);
+columns.AddFor(m => m.Surname).AllowSearch(true);
+columns.AddFor(m => m.HiringDate).Format("dd/MM/yyyy");
+columns.Add().DataField("Skills").CalculateCellValue("CalculateDisplayValueSkills")
+.CalculateDisplayValue(new JS("CalculateDisplayValueSkills"))
+.CalculateFilterExpression("CalculateFilterExpression")
+.HeaderFilter(filter => filter.DataSource("HeaderFilterDataSource"));
+columns.Add().Type(GridCommandColumnType.Buttons).Buttons(b => b.Add().Name(GridColumnButtonName.Edit));
+})
+.DataSource(d => d.Mvc().Controller("Employees")
+.LoadAction("Get")
+.Key("Id"))
+)
+
+@(Html.DevExtreme().Popup().ID("NewEmployeePopUp").Title("New Employee").Visible(false).Width(480).Height(550)
+      .Position(pos => pos.My(HorizontalAlignment.Center, VerticalAlignment.Top)
+      .At(HorizontalAlignment.Center, VerticalAlignment.Top).Of(new JS("document.getElementsByTagName('body')[0]")))
+      .ShowCloseButton(true)
+      .OnHiding("HidingNew")
+      .ContentTemplate(@<text>
+            <div class="flexPop">
+                <div class="flexPop2">
+                    <label class="labelFlexPop2">Name:</label>
+                    @Html.DevExtreme().TextBox().ID("nameNew").Width(400)
+                </div>
+                <div class="flexPop2">
+                    <label class="labelFlexPop2">Surname:</label>
+                    @Html.DevExtreme().TextBox().ID("surnameNew").Width(400)
+                </div>
+                <div class="flexPop2">
+                    <label class="labelFlexPop2">Hiring Date:</label>
+                    @Html.DevExtreme().DateBox().ID("hiringDateNew").Width(400).Type(DateBoxType.Date).DisplayFormat("dd/MM/yyyy").Width(400).AcceptCustomValue(false).OpenOnFieldClick(true)
+                </div>
+            </div>
+            <br />
+            @(Html.DevExtreme().DataGrid<CodeChallenge.WebApp.Models.Skill>()
+              .Height(250)
+              .FocusedRowEnabled(true)
+              .ID("SkillsGridContainer")
+              .ColumnAutoWidth(true)
+              .ShowBorders(true)
+              .OnToolbarPreparing("ToolbarPreparingNew")
+              .OnCellPrepared("CellPrepared")
+              .OnRowValidating("RowValidating")
+              .Editing(editing =>
+              {
+                  editing.Mode(GridEditMode.Batch);
+                  editing.AllowAdding(true);
+                  editing.AllowDeleting(true);
+              })
+              .SearchPanel(sp =>
+              {
+                  sp.Visible(true);
+              })
+              .HeaderFilter(v => v.Visible(true)).AllowColumnReordering(true).AllowColumnResizing(true).ColumnMinWidth(50)
+              .Selection(s => s.Mode(SelectionMode.Multiple))
+              .Paging(paging =>
+              {
+                  paging.Enabled(true);
+                  paging.PageSize(5);
+              })
+              .Columns(columns =>
+              {
+                  columns.AddFor(m => m.Name).AllowSearch(true);
+                  columns.AddFor(m => m.Description).AllowSearch(true);
+                  columns.AddFor(m => m.IsRequired).Visible(false);
+                  columns.AddFor(m => m.DateCreated).Visible(false);
+              })
+              .DataSource(d => d.Mvc().Controller("Skills")
+              .LoadAction("GetAll")
+              .Key("Id"))
+            )
+            <div class="flexPop3">
+                @Html.DevExtreme().Button().ID("SavePopUpNew").Text("Save").OnClick("SaveNew").Width(80)
+                @Html.DevExtreme().Button().ID("CancelPopUpNew").Text("Cancel").OnClick("CancelNew").Width(80)
+            </div>
+    </text>))
+
+@(Html.DevExtreme().Popup().ID("ImportEmployeesPopUp").Title("Import Employees").Visible(false).Width(480).Height(550)
+      .Position(pos => pos.My(HorizontalAlignment.Center, VerticalAlignment.Top)
+      .At(HorizontalAlignment.Center, VerticalAlignment.Top).Of(new JS("document.getElementsByTagName('body')[0]")))
+      .ShowCloseButton(true)
+      .OnHiding("HidingImport")
+      .ContentTemplate(@<text>
+            @(Html.DevExtreme().DataGrid<CodeChallenge.WebApp.Models.Employee>()
+              .Height(420)
+              .FocusedRowEnabled(true)
+              .ID("ImportEmployeesGridContainer")
+              .ColumnAutoWidth(true)
+              .ShowBorders(true)
+              .OnToolbarPreparing("ToolbarPreparingImport")
+              .SearchPanel(sp =>
+              {
+                  sp.Visible(true);
+              })
+              .HeaderFilter(v => v.Visible(true)).AllowColumnReordering(true).AllowColumnResizing(true).ColumnMinWidth(50)
+              .Selection(s => s.Mode(SelectionMode.Multiple))
+              .Paging(paging =>
+              {
+                  paging.Enabled(true);
+                  paging.PageSize(9);
+              })
+              .Columns(columns =>
+              {
+                  columns.AddFor(m => m.Id).Visible(false);
+                  columns.AddFor(m => m.Name).AllowSearch(true);
+                  columns.AddFor(m => m.Surname).AllowSearch(true);
+                  columns.AddFor(m => m.HiringDate).AllowSearch(true);
+                  columns.AddFor(m => m.HiringDate).Visible(false);
+              })
+              .DataSource(d => d.Mvc().Controller("Employees")
+              .LoadAction("ImportEmployees")
+              .Key("Id"))
+            )
+            <div class="flexPop3">
+                @Html.DevExtreme().Button().ID("ImportPopUp").Text("Import").OnClick("Import").Width(80)
+                @Html.DevExtreme().Button().ID("CancelPopUpImport").Text("Cancel").OnClick("CancelImport").Width(80)
+            </div>
+    </text>))
+
+@(Html.DevExtreme().Popup().ID("HistoryPopUp").Title("Employee Data Changes").Visible(false).Width(480).Height(550)
+      .Position(pos => pos.My(HorizontalAlignment.Center, VerticalAlignment.Top)
+      .At(HorizontalAlignment.Center, VerticalAlignment.Top).Of(new JS("document.getElementsByTagName('body')[0]")))
+      .ShowCloseButton(true)
+      .ContentTemplate(@<text><div id="HistoryGridContainer"></div>        
+            <div class="flexPop3_3">
+                @Html.DevExtreme().Button().ID("CancelPopUpImport").Text("Cancel").OnClick("CancelHistory").Width(80)
+            </div>
+    </text>))
+
+@(Html.DevExtreme().Popup().ID("DeleteConfirm").Visible(false).ShowTitle(false).ShowCloseButton(false)
+    .Height(135).Width(320)
+    .Position(pos => pos
+    .My(HorizontalAlignment.Center, VerticalAlignment.Center)
+    .At(HorizontalAlignment.Center, VerticalAlignment.Center)
+    .Of(new JS("document.getElementsByTagName('body')[0]")))
+    .ContentTemplate(@<text>
+            <p>Are you sure you want to delete this record?</p>
+            <div class="ButtonsConfirmDelete">
+                @Html.DevExtreme().Button().ID("YesButton").Text("Yes").OnClick("ConfirmDelete").Width(60)
+                @Html.DevExtreme().Button().ID("NoButton").Text("No").OnClick("ClosePopUpDelete").Width(60)
+            </div>
+    </text>))
+
+@(Html.DevExtreme().Popup().ID("DeleteConfirmMany").Visible(false).ShowTitle(false).ShowCloseButton(false)
+    .Height(135).Width(340)
+    .Position(pos => pos
+    .My(HorizontalAlignment.Center, VerticalAlignment.Center)
+    .At(HorizontalAlignment.Center, VerticalAlignment.Center)
+    .Of(new JS("document.getElementsByTagName('body')[0]"))
+    )
+    .ContentTemplate(@<text>
+            <p>Are you sure you want to delete these records?</p>
+            <div class="ButtonsConfirmDeleteMany">
+                @Html.DevExtreme().Button().ID("YesButton").Text("Yes").OnClick("ConfirmDeleteMany").Width(60)
+                @Html.DevExtreme().Button().ID("NoButton").Text("No").OnClick("ClosePopUpDeleteMany").Width(60)
+            </div>
+    </text>))
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/3.3.1/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.4.0/polyfill.min.js"></script>
+<script type="text/javascript" src="~/js/export.js" fileName="Employees.xlsx"></script>
+<script type="text/javascript" src="~/js/Employees.js"></script>

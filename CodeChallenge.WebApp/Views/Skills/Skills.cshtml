@@ -1,0 +1,128 @@
+﻿@(Html.DevExtreme().DataGrid<CodeChallenge.WebApp.Models.Skill>()
+    .Height("90%")
+    .FocusedRowEnabled(true)
+    .ID("SkillGridContainer")
+    .ColumnAutoWidth(true)
+    .ShowBorders(true)
+    .SearchPanel(sp =>
+    {
+        sp.Visible(true);
+    })
+    .HeaderFilter(v => v.Visible(true)).AllowColumnReordering(true).AllowColumnResizing(true).ColumnMinWidth(50)
+    .Selection(s => s.Mode(SelectionMode.Multiple))
+    .Export(e => e.Enabled(true).AllowExportSelectedData(true))
+    .Paging(paging =>
+    {
+        paging.Enabled(true);
+        paging.PageSize(new JS("PageSize()"));
+
+    })
+    .OnToolbarPreparing("ToolbarPreparing")
+    .OnExporting("Exporting")
+    .OnEditingStart("EditingStart")
+    .Editing(editing =>
+        editing.Mode(GridEditMode.Popup).Texts(texts => texts.EditRow("Details"))
+        .AllowUpdating(true)
+        .Popup(p => p
+        .Title("Skill Details")
+        .ID("EditSkillPopUp")
+        .ShowTitle(true)
+        .OnHiding("Hiding")
+        .ToolbarItems(t => t.Add().Template(@<text></text>))
+.Width(480)
+.Height(400)
+.Position(pos => pos
+.My(HorizontalAlignment.Center, VerticalAlignment.Top)
+.At(HorizontalAlignment.Center, VerticalAlignment.Top)
+.Of(new JS("document.getElementsByTagName('body')[0]"))
+).ContentTemplate(@<text>
+                    @Html.DevExtreme().TextBox().ID("id").Visible(false)
+                    <div class="flexPop">
+                        <div class="flexPop2">
+                            <label class="labelFlexPop2">Name:</label>
+                            @Html.DevExtreme().TextBox().ID("name").Width(400).ReadOnly(true)
+                        </div>
+                        <div class="flexPop2">
+                            <label class="labelFlexPop2">Description:</label>
+                            @Html.DevExtreme().TextArea().ID("description").Width(400).ReadOnly(true)
+                        </div>
+                        <div class="flexPop2">
+                            <label class="labelFlexPop2">Date Created:</label>
+                            @Html.DevExtreme().DateBox().ID("dateCreated").Type(DateBoxType.Date).DisplayFormat("dd/MM/yyyy").Width(400).ReadOnly(true).AcceptCustomValue(false).OpenOnFieldClick(true)
+                        </div>
+                        <div class="flexPop2">
+                            <label class="labelFlexPop2CheckBox">Required:</label>
+                            @Html.DevExtreme().CheckBox().ID("required").ReadOnly(true)
+                        </div>
+                    </div>
+                    <div class="flexPop4">
+                        @Html.DevExtreme().Button().ID("EditPopUp").Text("Edit").OnClick("Edit").Width(80)
+                        @Html.DevExtreme().Button().ID("SavePopUp").Text("Save").OnClick("Save").Width(80)
+                        <div class="flexPop5">
+                            @Html.DevExtreme().Button().ID("DeletePopUp").Text("Delete").OnClick("Delete").Width(80)
+                            @Html.DevExtreme().Button().ID("CancelPopUp").Text("Cancel").OnClick("Cancel").Width(80)
+                        </div>
+                    </div>
+
+</text>)))
+.Columns(columns =>
+{
+    columns.AddFor(m => m.Id).Visible(false);
+    columns.AddFor(m => m.Name);
+    columns.AddFor(m => m.Description);
+    columns.AddFor(m => m.IsRequired).Visible(true).Width(150).Caption("Required");
+    columns.AddFor(m => m.DateCreated).Visible(true).Caption("Date Created");
+    columns.Add().Type(GridCommandColumnType.Buttons).Buttons(b => b.Add().Name(GridColumnButtonName.Edit));
+})
+.DataSource(d => d.Mvc().Controller("Skills")
+.LoadAction("GetAll")
+.Key("Id"))
+)
+
+
+@(Html.DevExtreme().Popup().ID("NewSkillPopUp").Title("New Skill").Visible(false).Width(480).Height(400)
+      .Position(pos => pos.My(HorizontalAlignment.Center, VerticalAlignment.Top)
+      .At(HorizontalAlignment.Center, VerticalAlignment.Top).Of(new JS("document.getElementsByTagName('body')[0]")))
+      .ShowCloseButton(true)
+      .OnHiding("HidingNew")
+      .ContentTemplate(@<text>
+            <div class="flexPop">
+                <div class="flexPop2">
+                    <label class="labelFlexPop2">Name:</label>
+                    @Html.DevExtreme().TextBox().ID("nameNew").Width(400)
+                </div>
+                <div class="flexPop2">
+                    <label class="labelFlexPop2">Description:</label>
+                    @Html.DevExtreme().TextArea().ID("descriptionNew").Width(400)
+                </div>
+                <div class="flexPop2">
+                    <label class="labelFlexPop2">Date Created:</label>
+                    @Html.DevExtreme().DateBox().ID("dateCreatedNew").Type(DateBoxType.Date).DisplayFormat("dd/MM/yyyy").Width(400).Value(DateTime.Now).AcceptCustomValue(false).OpenOnFieldClick(true).Min(DateTime.Now)
+                </div>
+                <div class="flexPop2">
+                    <label class="labelFlexPop2CheckBox">Required:</label>
+                    @Html.DevExtreme().CheckBox().ID("requiredNew").Value(true)
+                </div>
+            </div>
+            <div class="flexPop3_2">
+                @Html.DevExtreme().Button().ID("SavePopUpNew").Text("Save").OnClick("SaveNew").Width(80)
+                @Html.DevExtreme().Button().ID("CancelPopUpNew").Text("Cancel").OnClick("CancelNew").Width(80)
+            </div>
+    </text>))
+
+@(Html.DevExtreme().Popup().ID("deleteConfirm").Visible(false).ShowTitle(false).ShowCloseButton(false)
+    .Height(135).Width(320)
+    .ContentTemplate(@<text>
+       <p>Are you sure you want to delete this record?</p>
+       <div class="ButtonsConfirmDelete">
+           @Html.DevExtreme().Button().ID("YesButton").Text("Yes").OnClick("ConfirmDelete").Width(60)
+           @Html.DevExtreme().Button().ID("NoButton").Text("No").OnClick("ClosePopUpDelete").Width(60)
+       </div>
+    </text>))
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/3.3.1/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.4.0/polyfill.min.js"></script>
+<script type="text/javascript" src="~/js/export.js" fileName="Skills.xlsx"></script>
+<script type="text/javascript" src="~/js/Skills.js"></script>

@@ -1,0 +1,119 @@
+﻿main {
+    height:90vh;
+    min-height:520px;
+    margin-top:15px;
+}
+
+.flexPop {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-top:0px;
+}
+
+.flexPop2 {
+    display: flex;
+    flex-direction: row;
+    margin-bottom:10px;
+}
+
+.flexPop2_2 {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 3px;
+}
+
+.flexPop3 {
+    display: flex;
+    flex-direction: row;
+    margin-left:267px;
+    margin-top:10px;
+}
+.flexPop3_2 {
+    display: flex;
+    flex-direction: row;
+    margin-left: 267px;
+    margin-top: 80px;
+}
+.flexPop3_3 {
+    display: flex;
+    flex-direction: row;
+    margin-left: 358px;
+    margin-top: 10px;
+}
+.flexPop4 {
+    display: flex;
+    flex-direction: row;
+    margin-left: 0px;
+    margin-top: 80px;
+}
+.flexPop4_2 {
+    display: flex;
+    flex-direction: row;
+    margin-left: 0px;
+    margin-top: 8px;
+}
+.flexPop5 {
+    display: flex;
+    flex-direction: row;
+    margin-left: 90px;
+}
+
+.labelFlexPop2 {
+    margin-top:6.5px;
+    margin-right:15px;
+    width:100px;
+}
+
+.labelFlexPop2_2 {
+    margin-top: 6.5px;
+    margin-right: 10px;
+    width: 100px;
+}
+.labelFlexPop2CheckBox {
+    margin-right: 0px;
+    width: 100px;
+}
+#SavePopUpNew, #EditPopUp, #SavePopUp, #DeletePopUp, #ImportPopUp, #HistoryPopUp {
+    margin-right: 10px;
+}
+#HistoryPopUp .dx-button-content {
+    padding:7px 0px 8px;
+}
+.ButtonsConfirmDelete {
+    margin-left: 140px;
+    margin-top: 45px;
+}
+.ButtonsConfirmDeleteMany {
+    margin-left: 160px;
+    margin-top: 45px;
+}
+#YesButton {
+    margin-right: 10px;
+}
+
+#SkillsGridContainerEdit {
+    height:250px;
+    margin-top:3px;
+}
+#HistoryGridContainer {
+    height: 410px;
+}
+
+.GreytoolbarLink {
+    background-color: transparent;
+    border: none;
+    color: #333;
+    display: flex;
+    font-size: 15px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+#GreyToolbar > div {
+    background-color: #e8e8e8;
+}
+
+.dx-toolbar-center text {
+    font-size: 22px !important;
+}
